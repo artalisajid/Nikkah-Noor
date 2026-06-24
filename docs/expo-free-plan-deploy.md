@@ -2,7 +2,7 @@
 
 This project is set up for:
 
-- EAS Hosting for the web app
+- GitHub Pages for the web app
 - EAS Update for over-the-air JavaScript, styling, and asset changes
 - EAS Build preview APKs for Android device testing
 
@@ -11,8 +11,9 @@ This project is set up for:
 After the project is connected to Expo and a GitHub repository:
 
 - Pushes to `main` run [.github/workflows/expo-deploy.yml](</Users/sajidali/Documents/Nikkah Noor/.github/workflows/expo-deploy.yml>)
-- The workflow publishes an OTA update to the `production` channel
-- The workflow exports the web app and deploys it to EAS Hosting
+- Pushes to `main` also run [.github/workflows/github-pages.yml](</Users/sajidali/Documents/Nikkah Noor/.github/workflows/github-pages.yml>)
+- The Expo workflow publishes an OTA update to the `production` channel
+- The Pages workflow exports the web app and deploys it to GitHub Pages
 
 That means normal app-code changes such as screens, copy, layout, colors, business logic, and bundled assets can reach:
 
@@ -56,7 +57,7 @@ npm run build:android:preview
 5. Deploy the web app the first time:
 
 ```bash
-npm run deploy:web
+gh workflow run "GitHub Pages Deploy"
 ```
 
 6. Add these GitHub repository secrets:
@@ -70,4 +71,4 @@ npm run deploy:web
 ## Notes
 
 - Expo's free plan currently includes up to 15 Android and 15 iOS builds, and OTA updates for up to 1K monthly active users.
-- EAS Hosting and EAS Update both require an Expo account and project connection before automation can run.
+- GitHub Pages provides the free hosted web app, while Expo handles OTA updates and APK builds.
