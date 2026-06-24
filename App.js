@@ -64,13 +64,25 @@ export default function App() {
   const [session, setSession] = useState(null);
   const [pendingEmail, setPendingEmail] = useState("");
   const [syncLabel, setSyncLabel] = useState("Loading");
+  const [syncTone, setSyncTone] = useState("info");
   const [profileIndex, setProfileIndex] = useState(0);
   const [filtersOpen, setFiltersOpen] = useState(false);
   const [detailsOpen, setDetailsOpen] = useState(false);
   const [matchOpen, setMatchOpen] = useState(false);
   const [selectedMatchId, setSelectedMatchId] = useState(null);
   const [notificationStatus, setNotificationStatus] = useState("Push notifications are not enabled.");
+  const [notificationStatusTone, setNotificationStatusTone] = useState("warning");
   const saveTimer = useRef(null);
+
+  function setSyncFeedback(message, tone = "info") {
+    setSyncLabel(message);
+    setSyncTone(tone);
+  }
+
+  function setNotificationFeedback(message, tone = "info") {
+    setNotificationStatus(message);
+    setNotificationStatusTone(tone);
+  }
 
   async function loadUserApp(user) {
     if (!user) return null;
@@ -78,11 +90,11 @@ export default function App() {
     try {
       const state = await repository.load(user);
       setAppState(state);
-      setSyncLabel(repository.isRemote ? "Supabase connected" : "Local demo mode");
+      setSyncFeedback(repository.isRemote ? "Supabase connected" : "Local demo mode", repository.isRemote ? "success" : "warning");
       return state;
     } catch (error) {
       console.warn(error);
-      setSyncLabel("Could not load Supabase data");
+      setSyncFeedback("Could not load Supabase data", "error");
       return null;
     } finally {
       setLoading(false);
@@ -101,14 +113,14 @@ export default function App() {
             if (mounted) setActiveScreen("home");
           });
         }
-        setSyncLabel(repository.isRemote ? "Supabase ready" : "Local demo mode");
+        setSyncFeedback(repository.isRemote ? "Supabase ready" : "Local demo mode", repository.isRemote ? "info" : "warning");
         setLoading(false);
         return null;
       })
       .catch((error) => {
         console.warn(error);
         if (!mounted) return;
-        setSyncLabel(error.message);
+        setSyncFeedback(error.message, "error");
         setLoading(false);
       });
 
@@ -175,7 +187,7 @@ export default function App() {
       },
       onError: (error) => {
         console.warn(error.message);
-        setSyncLabel("Realtime chat is reconnecting");
+        setSyncFeedback("Realtime chat is reconnecting", "warning");
       },
     });
   }, [appState?.currentUserId]);
@@ -197,7 +209,7 @@ export default function App() {
       },
       onError: (error) => {
         console.warn(error.message);
-        setNotificationStatus("Realtime notifications are reconnecting.");
+        setNotificationFeedback("Realtime notifications are reconnecting.", "warning");
       },
     });
   }, [appState?.currentUserId]);
@@ -218,7 +230,7 @@ export default function App() {
       },
       onError: (error) => {
         console.warn(error.message);
-        setSyncLabel("Realtime profile updates are reconnecting");
+        setSyncFeedback("Realtime profile updates are reconnecting", "warning");
       },
     });
   }, [appState?.currentUserId]);
@@ -266,7 +278,7 @@ export default function App() {
   async function handleEmailSignup(credentials) {
     const data = await signUpWithEmail(credentials);
     setPendingEmail(credentials.email.trim().toLowerCase());
-    setSyncLabel("Verification code sent to email");
+    setSyncFeedback("Verification code sent to email", "success");
     if (data.session?.user) {
       setSession(data.session);
       await loadUserApp(data.session.user);
@@ -283,7 +295,7 @@ export default function App() {
     if (nextSession?.user) {
       setSession(nextSession);
       await loadUserApp(nextSession.user);
-      setSyncLabel("Email verified");
+      setSyncFeedback("Email verified", "success");
       navigate("gender");
     }
     return data;
@@ -294,7 +306,7 @@ export default function App() {
     if (data.session?.user) {
       setSession(data.session);
       await loadUserApp(data.session.user);
-      setSyncLabel("Signed in");
+      setSyncFeedback("Signed in", "success");
       navigate("home");
     }
     return data;
@@ -302,12 +314,12 @@ export default function App() {
 
   async function handlePasswordReset(email) {
     await sendPasswordReset(email);
-    setSyncLabel("Password reset email sent");
+    setSyncFeedback("Password reset email sent", "success");
   }
 
   async function handlePasswordUpdate(password) {
     await updatePassword(password);
-    setSyncLabel("Password updated");
+    setSyncFeedback("Password updated", "success");
     const currentSession = session || (await getCurrentSession());
     if (currentSession?.user) {
       setSession(currentSession);
@@ -322,7 +334,7 @@ export default function App() {
     const normalizedEmail = email.trim().toLowerCase();
     await updateEmailAddress(normalizedEmail);
     updateCurrentUser({ pendingEmail: normalizedEmail });
-    setSyncLabel("Email update confirmation sent");
+    setSyncFeedback("Email update confirmation sent", "success");
   }
 
   async function handleSignOut() {
@@ -335,7 +347,7 @@ export default function App() {
     setFiltersOpen(false);
     setDetailsOpen(false);
     setMatchOpen(false);
-    setSyncLabel(repository.isRemote ? "Supabase ready" : "Local demo mode");
+    setSyncFeedback(repository.isRemote ? "Supabase ready" : "Local demo mode", repository.isRemote ? "info" : "warning");
     setActiveScreen("welcome");
   }
 
@@ -355,7 +367,7 @@ export default function App() {
       };
       repository.saveProfile(updatedUser).catch((error) => {
         console.warn("Profile sync failed", error.message);
-        setSyncLabel("Saved locally");
+        setSyncFeedback("Saved locally", "warning");
       });
       return {
         ...state,
@@ -365,7 +377,7 @@ export default function App() {
         ),
       };
     });
-    setSyncLabel(repository.isRemote ? "Autosaved to Supabase" : "Autosaved locally");
+    setSyncFeedback(repository.isRemote ? "Autosaved to Supabase" : "Autosaved locally", repository.isRemote ? "success" : "warning");
   }
 
   function updateFilters(patch) {
@@ -400,7 +412,7 @@ export default function App() {
         ],
       };
     });
-    setSyncLabel(repository.isRemote ? "Family saved to Supabase" : "Family saved locally");
+    setSyncFeedback(repository.isRemote ? "Family saved to Supabase" : "Family saved locally", repository.isRemote ? "success" : "warning");
   }
 
   function handleSwipe(type) {
@@ -489,7 +501,7 @@ export default function App() {
       notifications: [notification, ...state.notifications],
     }));
     setSelectedMatchId(null);
-    setSyncLabel("Profile blocked and hidden from matching");
+    setSyncFeedback("Profile blocked and hidden from matching", "success");
   }
 
   function handleDetailsLike() {
@@ -507,7 +519,7 @@ export default function App() {
     });
 
     if (!result.ok) {
-      setSyncLabel(result.error);
+      setSyncFeedback(result.error, "error");
       return false;
     }
 
@@ -526,7 +538,7 @@ export default function App() {
       })
       .catch((error) => {
         console.warn("Message sync failed", error.message);
-        setSyncLabel("Message saved locally while chat reconnects");
+        setSyncFeedback("Message saved locally while chat reconnects", "warning");
       });
 
     setAppState((state) => ({
@@ -536,18 +548,25 @@ export default function App() {
         match.id === result.match.id ? { ...match, unread: 0 } : match,
       ),
     }));
-    setSyncLabel(repository.isRemote ? "Message sent through Supabase" : "Message sent locally");
+    setSyncFeedback(repository.isRemote ? "Message sent through Supabase" : "Message sent locally", repository.isRemote ? "success" : "warning");
     return true;
   }
 
   async function registerPushNotifications() {
     if (!appState?.currentUserId) {
-      setNotificationStatus("Sign in before enabling notifications.");
+      setNotificationFeedback("Sign in before enabling notifications.", "error");
       return null;
     }
 
     const result = await notificationService.registerPushToken(appState.currentUserId);
-    setNotificationStatus(result.message);
+    setNotificationFeedback(
+      result.message,
+      result.ok
+        ? "success"
+        : result.status === "unsupported_web" || result.status === "missing_project_id"
+          ? "warning"
+          : "error",
+    );
 
     const notification = notificationService.buildInAppNotification({
       userId: appState.currentUserId,
@@ -596,7 +615,7 @@ export default function App() {
       reports: [report, ...state.reports],
       notifications: [notification, ...state.notifications],
     }));
-    setSyncLabel(repository.isRemote ? "Report sent to Supabase" : "Report saved locally");
+    setSyncFeedback(repository.isRemote ? "Report sent to Supabase" : "Report saved locally", repository.isRemote ? "success" : "warning");
   }
 
   function requestAccountDeletion(reason) {
@@ -610,17 +629,17 @@ export default function App() {
     repository.requestAccountDeletion(request).catch((error) => {
       console.warn("Account deletion request failed", error.message);
     });
-    setSyncLabel(repository.isRemote ? "Deletion request sent to Supabase" : "Deletion request saved locally");
+    setSyncFeedback(repository.isRemote ? "Deletion request sent to Supabase" : "Deletion request saved locally", repository.isRemote ? "success" : "warning");
   }
 
   async function uploadProfilePhoto(asset) {
     try {
       const photoUrl = await repository.uploadProfilePhoto(appState.currentUserId, asset);
-      setSyncLabel(repository.isRemote ? "Image uploaded to Supabase" : "Image saved locally");
+      setSyncFeedback(repository.isRemote ? "Image uploaded to Supabase" : "Image saved locally", repository.isRemote ? "success" : "warning");
       return photoUrl;
     } catch (error) {
       console.warn("Image upload failed", error.message);
-      setSyncLabel("Image saved locally");
+      setSyncFeedback("Image saved locally", "warning");
       return asset.uri;
     }
   }
@@ -630,7 +649,7 @@ export default function App() {
       setAppState(state);
       setProfileIndex(0);
       setSelectedMatchId(null);
-      setSyncLabel("Demo reset");
+      setSyncFeedback("Demo reset", "success");
     });
   }
 
@@ -649,6 +668,7 @@ export default function App() {
     active: activeScreen,
     navigate,
     syncLabel,
+    syncTone,
     session,
     pendingEmail,
     appState,
@@ -662,6 +682,7 @@ export default function App() {
     familyMembers: (appState?.familyMembers || []).filter((member) => member.userId === appState?.currentUserId),
     notifications: (appState?.notifications || []).filter((notification) => notification.userId === appState?.currentUserId),
     notificationStatus,
+    notificationStatusTone,
     subscription: appState?.subscription || {},
     filters: appState?.filters || {},
     reports: (appState?.reports || []).filter((report) => report.reporterId === appState?.currentUserId),

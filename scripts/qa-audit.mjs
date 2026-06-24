@@ -1,4 +1,8 @@
 import assert from "node:assert/strict";
+import { readFileSync } from "node:fs";
+
+const appSource = readFileSync("App.js", "utf8");
+const screensSource = readFileSync("src/screens.js", "utf8");
 
 function personName(profile) {
   if (!profile) return "Profile";
@@ -24,6 +28,24 @@ function pushStatus({ platform, token, userId }) {
   if (platform === "web") return "unsupported_web";
   if (!/^(Expo|Exponent)PushToken\[[A-Za-z0-9_-]+\]$/.test(token)) return "invalid_token";
   return "registered";
+}
+
+function validateFamilyMember(member) {
+  if (!member.name?.trim() || !member.relation?.trim() || !member.phone?.trim() || !member.permission?.trim()) {
+    return "missing_fields";
+  }
+
+  if (!/^\+?[\d\s()-]{8,}$/.test(member.phone.trim())) {
+    return "invalid_phone";
+  }
+
+  return "ok";
+}
+
+function canSubmitSafetyReport({ profile, reason }) {
+  if (!profile) return false;
+  if (!String(reason || "").trim()) return false;
+  return true;
 }
 
 function visibleData(state) {
@@ -165,6 +187,22 @@ function runMultiUserQa() {
   assert.deepEqual(visible.familyMembers.map((item) => item.id), ["family-2"]);
 }
 
+function runFormGuardQa() {
+  assert.equal(validateFamilyMember({ name: "", relation: "Brother", phone: "+92 300 0000000", permission: "View" }), "missing_fields");
+  assert.equal(validateFamilyMember({ name: "Ali", relation: "Brother", phone: "123", permission: "View" }), "invalid_phone");
+  assert.equal(validateFamilyMember({ name: "Ali", relation: "Brother", phone: "+92 300 0000000", permission: "View" }), "ok");
+  assert.equal(canSubmitSafetyReport({ profile: null, reason: "Fake profile" }), false);
+  assert.equal(canSubmitSafetyReport({ profile: { id: "user-b" }, reason: "" }), false);
+  assert.equal(canSubmitSafetyReport({ profile: { id: "user-b" }, reason: "Fake profile" }), true);
+}
+
+function runStatusUiQa() {
+  assert.ok(appSource.includes("syncTone"), "app should track sync tone alongside sync text");
+  assert.ok(appSource.includes("notificationStatusTone"), "app should track notification tone alongside notification text");
+  assert.ok(screensSource.includes("StatusMessage"), "screens should use reusable status messages");
+  assert.ok(screensSource.includes("StatusText"), "screens should use reusable inline status text");
+}
+
 const qaTeam = [
   ["Navigation Expert", runNavigationQa],
   ["Mobile Tester", runMobileQa],
@@ -172,6 +210,8 @@ const qaTeam = [
   ["Notification Tester", runNotificationQa],
   ["Backend Tester", runBackendQa],
   ["Multi-user QA Tester", runMultiUserQa],
+  ["Form Guard Tester", runFormGuardQa],
+  ["Status UI Tester", runStatusUiQa],
 ];
 
 for (const [, run] of qaTeam) {

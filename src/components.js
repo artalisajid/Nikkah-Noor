@@ -36,6 +36,39 @@ const glyphs = {
   chevronDown: "⌄",
 };
 
+function getStatusPalette(tone = "info") {
+  switch (tone) {
+    case "success":
+      return {
+        accent: "#86F0B3",
+        backgroundColor: "rgba(46,204,113,0.12)",
+        borderColor: "rgba(46,204,113,0.28)",
+        icon: "shield",
+      };
+    case "warning":
+      return {
+        accent: "#F8C66A",
+        backgroundColor: "rgba(243,156,18,0.14)",
+        borderColor: "rgba(243,156,18,0.28)",
+        icon: "bolt",
+      };
+    case "error":
+      return {
+        accent: "#FF8FA3",
+        backgroundColor: "rgba(139,21,56,0.18)",
+        borderColor: "rgba(255,123,145,0.28)",
+        icon: "pass",
+      };
+    default:
+      return {
+        accent: "#7CCBFF",
+        backgroundColor: "rgba(52,152,219,0.14)",
+        borderColor: "rgba(52,152,219,0.28)",
+        icon: "info",
+      };
+  }
+}
+
 export function Icon({ name, size = 20, color = colors.text }) {
   return (
     <Text
@@ -178,6 +211,41 @@ export function Badge({ icon, tone = "gold" }) {
     <View style={styles.badge}>
       <Icon name={icon} color={color} size={16} />
     </View>
+  );
+}
+
+export function StatusMessage({ message, tone = "info", style, compact = false }) {
+  if (!message) return null;
+  const palette = getStatusPalette(tone);
+
+  return (
+    <View
+      style={[
+        styles.statusMessage,
+        compact && styles.statusMessageCompact,
+        {
+          backgroundColor: palette.backgroundColor,
+          borderColor: palette.borderColor,
+        },
+        style,
+      ]}
+    >
+      <View style={styles.statusIconWrap}>
+        <Icon name={palette.icon} color={palette.accent} size={15} />
+      </View>
+      <Text style={[styles.statusBlockText, { color: palette.accent }]}>{message}</Text>
+    </View>
+  );
+}
+
+export function StatusText({ message, tone = "info", style, numberOfLines }) {
+  if (!message) return null;
+  const palette = getStatusPalette(tone);
+
+  return (
+    <Text numberOfLines={numberOfLines} style={[styles.statusText, { color: palette.accent }, style]}>
+      {message}
+    </Text>
   );
 }
 
@@ -470,6 +538,31 @@ export const styles = StyleSheet.create({
     backgroundColor: "rgba(0,0,0,0.62)",
     borderWidth: 1,
     borderColor: "rgba(255,255,255,0.1)",
+  },
+  statusMessage: {
+    flexDirection: "row",
+    alignItems: "flex-start",
+    gap: spacing.sm,
+    borderRadius: radius.sm,
+    borderWidth: 1,
+    paddingHorizontal: spacing.md,
+    paddingVertical: spacing.md,
+  },
+  statusMessageCompact: {
+    paddingVertical: spacing.sm,
+  },
+  statusIconWrap: {
+    paddingTop: 1,
+  },
+  statusBlockText: {
+    ...type.small,
+    flex: 1,
+    minWidth: 0,
+    fontWeight: "700",
+  },
+  statusText: {
+    ...type.small,
+    fontWeight: "700",
   },
   avatar: {
     borderWidth: 2,

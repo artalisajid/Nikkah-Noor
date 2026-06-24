@@ -1,4 +1,4 @@
-import React, { useMemo, useState } from "react";
+import React, { useState } from "react";
 import * as ImagePicker from "expo-image-picker";
 import {
   ImageBackground,
@@ -25,6 +25,8 @@ import {
   PrimaryButton,
   ProgressBar,
   SelectField,
+  StatusMessage,
+  StatusText,
   SecondaryButton,
 } from "./components";
 import { premiumTiers } from "./data";
@@ -133,7 +135,27 @@ function getProfileMatches(matches, profiles) {
     .filter((match) => match.profile);
 }
 
-export function WelcomeScreen({ navigate, syncLabel, session, signOut }) {
+function createStatus(message, tone = "info") {
+  return message ? { message, tone } : null;
+}
+
+function isValidEmail(email = "") {
+  return /^[^\s@]+@[^\s@]+\.[^\s@]+$/.test(String(email).trim());
+}
+
+function validateFamilyMember(member) {
+  if (!member.name?.trim() || !member.relation?.trim() || !member.phone?.trim() || !member.permission?.trim()) {
+    return "Please add a name, relation, phone number, and permission.";
+  }
+
+  if (!/^\+?[\d\s()-]{8,}$/.test(member.phone.trim())) {
+    return "Enter a valid phone number for the family member.";
+  }
+
+  return "";
+}
+
+export function WelcomeScreen({ navigate, syncLabel, syncTone, session, signOut }) {
   const signedIn = Boolean(session?.user);
 
   return (
@@ -170,12 +192,11 @@ export function WelcomeScreen({ navigate, syncLabel, session, signOut }) {
           title={signedIn ? "Sign Out" : "Sign In"}
           onPress={signedIn ? signOut : () => navigate("authLogin")}
         />
-        <View style={styles.inlineNote}>
-          <Icon name="lock" color={colors.gold} size={15} />
-          <Text style={styles.noteText}>
-            {syncLabel}. Private profiles, encrypted verification, family-aware matching.
-          </Text>
-        </View>
+        <StatusMessage
+          compact
+          message={`${syncLabel}. Private profiles, encrypted verification, family-aware matching.`}
+          tone={syncTone}
+        />
       </View>
     </View>
   );
@@ -296,33 +317,34 @@ export function EmailAuthScreen({
   signUpWithEmail,
   signInWithEmail,
   syncLabel,
+  syncTone,
 }) {
   const isSignup = mode === "signup";
   const [fullName, setFullName] = useState("");
   const [email, setEmail] = useState("");
   const [password, setPassword] = useState("");
   const [confirmPassword, setConfirmPassword] = useState("");
-  const [status, setStatus] = useState("");
+  const [status, setStatus] = useState(null);
   const [submitting, setSubmitting] = useState(false);
 
   async function submit() {
     const normalizedEmail = email.trim().toLowerCase();
     if (!normalizedEmail || !password || (isSignup && !fullName.trim())) {
-      setStatus("Please complete all required fields.");
+      setStatus(createStatus("Please complete all required fields.", "error"));
       return;
     }
     const passwordIssue = isSignup ? passwordPolicyIssue(password) : "";
     if (passwordIssue) {
-      setStatus(passwordIssue);
+      setStatus(createStatus(passwordIssue, "error"));
       return;
     }
     if (isSignup && password !== confirmPassword) {
-      setStatus("Passwords do not match.");
+      setStatus(createStatus("Passwords do not match.", "error"));
       return;
     }
 
     setSubmitting(true);
-    setStatus(isSignup ? "Creating account..." : "Signing in...");
+    setStatus(createStatus(isSignup ? "Creating account..." : "Signing in...", "info"));
     try {
       if (isSignup) {
         await signUpWithEmail({ email: normalizedEmail, password, fullName });
@@ -330,7 +352,7 @@ export function EmailAuthScreen({
         await signInWithEmail({ email: normalizedEmail, password });
       }
     } catch (error) {
-      setStatus(error.message || "Authentication failed.");
+      setStatus(createStatus(error.message || "Authentication failed.", "error"));
     } finally {
       setSubmitting(false);
     }
@@ -399,7 +421,7 @@ export function EmailAuthScreen({
         </View>
       </Card>
 
-      {status ? <Text style={styles.authStatus}>{status}</Text> : null}
+      <StatusMessage message={status?.message} tone={status?.tone} />
       <PrimaryButton
         title={submitting ? "Please wait..." : isSignup ? "Send Email Code" : "Sign In"}
         onPress={submit}
@@ -419,8 +441,14 @@ export function EmailAuthScreen({
         ) : null}
       </View>
       <Card style={styles.infoCard}>
-        <Icon name="shield" color={colors.success} />
-        <Text style={styles.noteText}>{syncLabel}. Email verification protects profile access.</Text>
+        <View style={styles.flex}>
+          <Text style={styles.optionTitle}>Email verification</Text>
+          <StatusMessage
+            compact
+            message={`${syncLabel}. Email verification protects profile access.`}
+            tone={syncTone}
+          />
+        </View>
       </Card>
     </Screen>
   );
@@ -435,7 +463,7 @@ export function EmailOtpScreen({
 }) {
   const [email, setEmail] = useState(pendingEmail || "");
   const [otp, setOtp] = useState(["", "", "", "", "", ""]);
-  const [status, setStatus] = useState("");
+  const [status, setStatus] = useState(null);
   const [submitting, setSubmitting] = useState(false);
 
   function setDigit(index, value) {
@@ -446,15 +474,15 @@ export function EmailOtpScreen({
   async function submit() {
     const token = otp.join("");
     if (!email.trim() || token.length !== 6) {
-      setStatus("Enter your email and the 6-digit code.");
+      setStatus(createStatus("Enter your email and the 6-digit code.", "error"));
       return;
     }
     setSubmitting(true);
-    setStatus("Verifying email...");
+    setStatus(createStatus("Verifying email...", "info"));
     try {
       await verifyEmailOtp({ email, token });
     } catch (error) {
-      setStatus(error.message || "Could not verify this code.");
+      setStatus(createStatus(error.message || "Could not verify this code.", "error"));
     } finally {
       setSubmitting(false);
     }
@@ -462,15 +490,15 @@ export function EmailOtpScreen({
 
   async function resend() {
     if (!email.trim()) {
-      setStatus("Enter your signup email first.");
+      setStatus(createStatus("Enter your signup email first.", "error"));
       return;
     }
     setSubmitting(true);
     try {
       await resendSignupOtp(email);
-      setStatus("A fresh code was sent. Check your inbox.");
+      setStatus(createStatus("A fresh code was sent. Check your inbox.", "success"));
     } catch (error) {
-      setStatus(error.message || "Could not resend code yet.");
+      setStatus(createStatus(error.message || "Could not resend code yet.", "error"));
     } finally {
       setSubmitting(false);
     }
@@ -509,7 +537,7 @@ export function EmailOtpScreen({
           ))}
         </View>
       </Card>
-      {status ? <Text style={styles.authStatus}>{status}</Text> : null}
+      <StatusMessage message={status?.message} tone={status?.tone} />
       <PrimaryButton title={submitting ? "Please wait..." : "Verify Email"} onPress={submit} disabled={submitting} />
       <SecondaryButton title="Resend Code" onPress={resend} disabled={submitting} />
     </Screen>
@@ -518,21 +546,21 @@ export function EmailOtpScreen({
 
 export function ForgotPasswordScreen({ navigate, session, sendPasswordReset }) {
   const [email, setEmail] = useState("");
-  const [status, setStatus] = useState("");
+  const [status, setStatus] = useState(null);
   const [submitting, setSubmitting] = useState(false);
 
   async function submit() {
     if (!email.trim()) {
-      setStatus("Enter your account email.");
+      setStatus(createStatus("Enter your account email.", "error"));
       return;
     }
     setSubmitting(true);
-    setStatus("Sending reset email...");
+    setStatus(createStatus("Sending reset email...", "info"));
     try {
       await sendPasswordReset(email);
-      setStatus("Password reset link sent. Open your email and return here to set a new password.");
+      setStatus(createStatus("Password reset link sent. Open your email and return here to set a new password.", "success"));
     } catch (error) {
-      setStatus(error.message || "Could not send reset email.");
+      setStatus(createStatus(error.message || "Could not send reset email.", "error"));
     } finally {
       setSubmitting(false);
     }
@@ -563,7 +591,7 @@ export function ForgotPasswordScreen({ navigate, session, sendPasswordReset }) {
           We will send a secure Supabase recovery link. After the link opens the app, set a new password.
         </Text>
       </Card>
-      {status ? <Text style={styles.authStatus}>{status}</Text> : null}
+      <StatusMessage message={status?.message} tone={status?.tone} />
       <PrimaryButton title={submitting ? "Sending..." : "Send Reset Email"} onPress={submit} disabled={submitting} />
     </Screen>
   );
@@ -572,25 +600,25 @@ export function ForgotPasswordScreen({ navigate, session, sendPasswordReset }) {
 export function ResetPasswordScreen({ navigate, session, updatePassword }) {
   const [password, setPassword] = useState("");
   const [confirmPassword, setConfirmPassword] = useState("");
-  const [status, setStatus] = useState("");
+  const [status, setStatus] = useState(null);
   const [submitting, setSubmitting] = useState(false);
 
   async function submit() {
     const passwordIssue = passwordPolicyIssue(password);
     if (passwordIssue) {
-      setStatus(passwordIssue);
+      setStatus(createStatus(passwordIssue, "error"));
       return;
     }
     if (password !== confirmPassword) {
-      setStatus("Passwords do not match.");
+      setStatus(createStatus("Passwords do not match.", "error"));
       return;
     }
     setSubmitting(true);
-    setStatus("Updating password...");
+    setStatus(createStatus("Updating password...", "info"));
     try {
       await updatePassword(password);
     } catch (error) {
-      setStatus(error.message || "Could not update password.");
+      setStatus(createStatus(error.message || "Could not update password.", "error"));
     } finally {
       setSubmitting(false);
     }
@@ -623,15 +651,15 @@ export function ResetPasswordScreen({ navigate, session, updatePassword }) {
           textContentType="newPassword"
         />
       </Card>
-      {status ? <Text style={styles.authStatus}>{status}</Text> : null}
+      <StatusMessage message={status?.message} tone={status?.tone} />
       <PrimaryButton title={submitting ? "Updating..." : "Update Password"} onPress={submit} disabled={submitting} />
     </Screen>
   );
 }
 
-export function ProfileScreen({ navigate, currentUser, updateCurrentUser, syncLabel, uploadProfilePhoto }) {
+export function ProfileScreen({ navigate, currentUser, updateCurrentUser, syncLabel, syncTone, uploadProfilePhoto }) {
   const tagOptions = ["Traditional", "Educated", "Social work", "Responsible", "Family-first", "Religious"];
-  const [photoStatus, setPhotoStatus] = useState("");
+  const [photoStatus, setPhotoStatus] = useState(null);
 
   function toggleTag(tag) {
     const tags = currentUser.tags || [];
@@ -645,11 +673,11 @@ export function ProfileScreen({ navigate, currentUser, updateCurrentUser, syncLa
   }
 
   async function pickProfilePhoto() {
-    setPhotoStatus("Opening gallery...");
+    setPhotoStatus(createStatus("Opening gallery...", "info"));
     try {
       const permissionResult = await ImagePicker.requestMediaLibraryPermissionsAsync();
       if (permissionResult && !permissionResult.granted) {
-        setPhotoStatus("Photo library permission is required.");
+        setPhotoStatus(createStatus("Photo library permission is required.", "error"));
         return;
       }
 
@@ -662,15 +690,23 @@ export function ProfileScreen({ navigate, currentUser, updateCurrentUser, syncLa
 
       if (!result.canceled && result.assets?.[0]?.uri) {
         const asset = result.assets[0];
+        if (asset.mimeType && !["image/jpeg", "image/png", "image/webp"].includes(asset.mimeType)) {
+          setPhotoStatus(createStatus("Only JPG, PNG, or WEBP profile images are allowed.", "error"));
+          return;
+        }
+        if (asset.fileSize && asset.fileSize > 5 * 1024 * 1024) {
+          setPhotoStatus(createStatus("Profile image must be 5MB or smaller.", "error"));
+          return;
+        }
         updateCurrentUser({ photo: asset.uri });
         const storedPhoto = await uploadProfilePhoto(asset);
         updateCurrentUser({ photo: storedPhoto });
-        setPhotoStatus("Profile image updated.");
+        setPhotoStatus(createStatus("Profile image updated.", "success"));
       } else {
-        setPhotoStatus("");
+        setPhotoStatus(null);
       }
     } catch (error) {
-      setPhotoStatus(error.message || "Could not open image picker.");
+      setPhotoStatus(createStatus(error.message || "Could not open image picker.", "error"));
     }
   }
 
@@ -682,14 +718,14 @@ export function ProfileScreen({ navigate, currentUser, updateCurrentUser, syncLa
         eyebrow="Step 2 of 6"
         title="Create your profile"
         onBack={() => navigate("gender")}
-        right={<Text style={styles.savedText}>{syncLabel}</Text>}
+        right={<StatusText message={syncLabel} tone={syncTone} style={styles.savedText} numberOfLines={2} />}
       />
       <ProgressBar value={completion} />
 
       <Card style={styles.uploadCard}>
         <Avatar uri={currentUser.photo} size={128} />
         <SecondaryButton title="Upload Profile Image" onPress={pickProfilePhoto} />
-        {photoStatus ? <Text style={styles.bodySoft}>{photoStatus}</Text> : null}
+        <StatusMessage compact message={photoStatus?.message} tone={photoStatus?.tone} />
         <SelectField
           label="Photo privacy"
           value={currentUser.photoPrivacy || ""}
@@ -842,7 +878,7 @@ function SummaryList({ items }) {
   );
 }
 
-export function HomeScreen({ active, navigate, openFilters, openDetails, profile, onSwipe, syncLabel }) {
+export function HomeScreen({ active, navigate, openFilters, openDetails, profile, onSwipe, syncLabel, syncTone }) {
   return (
     <Screen
       padded={false}
@@ -864,7 +900,10 @@ export function HomeScreen({ active, navigate, openFilters, openDetails, profile
           <Icon name="moon" color={colors.gold} />
           <View style={styles.flex}>
             <Text style={styles.optionTitle}>Asr in 42 min</Text>
-            <Text style={styles.bodySoft}>{syncLabel}. Quiet mode can pause prompts during prayer.</Text>
+            <StatusText
+              message={`${syncLabel}. Quiet mode can pause prompts during prayer.`}
+              tone={syncTone}
+            />
           </View>
           <Pill label="Qibla" tone="gold" />
         </Card>
@@ -1001,7 +1040,7 @@ export function MatchesScreen({ active, navigate, openFilters, openChat, matches
   );
 }
 
-export function ChatScreen({ navigate, messages, matches, profiles, currentUserId, selectedMatchId, sendMessage, syncLabel, blockProfile }) {
+export function ChatScreen({ navigate, messages, matches, profiles, currentUserId, selectedMatchId, sendMessage, syncLabel, syncTone, blockProfile }) {
   const [draft, setDraft] = useState("");
   const activeMatch = matches.find((match) => match.id === selectedMatchId) || matches[0];
   const partner = activeMatch ? findProfile(profiles, activeMatch.matchedUserId) : null;
@@ -1026,7 +1065,8 @@ export function ChatScreen({ navigate, messages, matches, profiles, currentUserI
         {partner ? <Avatar uri={partner.photo} /> : null}
         <View style={styles.flex}>
           <Text style={styles.optionTitle}>{partner?.name || "Conversation"}</Text>
-          <Text style={styles.bodySoft}>Active 12 min ago · {syncLabel || currentUserId}</Text>
+          <Text style={styles.bodySoft}>Active 12 min ago</Text>
+          <StatusText message={syncLabel || currentUserId} tone={syncTone} />
         </View>
         <IconButton name="lock" label="Block user" onPress={() => partner && blockProfile(partner)} />
       </View>
@@ -1092,23 +1132,24 @@ export function SettingsScreen({
   subscription,
   updateSubscription,
   syncLabel,
+  syncTone,
   resetDemo,
   signOut,
   updateEmailAddress,
 }) {
   const [emailDraft, setEmailDraft] = useState(currentUser.email || "");
-  const [emailStatus, setEmailStatus] = useState("");
+  const [emailStatus, setEmailStatus] = useState(null);
 
   async function submitEmailUpdate() {
-    if (!emailDraft.trim() || !emailDraft.includes("@")) {
-      setEmailStatus("Enter a valid email address.");
+    if (!isValidEmail(emailDraft)) {
+      setEmailStatus(createStatus("Enter a valid email address.", "error"));
       return;
     }
     try {
       await updateEmailAddress(emailDraft);
-      setEmailStatus("Confirmation email sent. Your login email changes after verification.");
+      setEmailStatus(createStatus("Confirmation email sent. Your login email changes after verification.", "success"));
     } catch (error) {
-      setEmailStatus(error.message || "Could not update email.");
+      setEmailStatus(createStatus(error.message || "Could not update email.", "error"));
     }
   }
 
@@ -1121,7 +1162,7 @@ export function SettingsScreen({
         <Text style={styles.bodySoft}>{currentUser.handle}</Text>
         {currentUser.email ? <Text style={styles.bodySoft}>{currentUser.email}</Text> : null}
         <ProgressBar value={Number(currentUser.stats?.completion || 75)} />
-        <Text style={styles.goldLink}>{syncLabel}</Text>
+        <StatusText message={syncLabel} tone={syncTone} style={styles.goldLink} />
         <PrimaryButton title="Edit Profile" onPress={() => navigate("profile")} />
       </Card>
 
@@ -1143,7 +1184,7 @@ export function SettingsScreen({
           autoComplete="email"
           textContentType="emailAddress"
         />
-        {emailStatus ? <Text style={styles.authStatus}>{emailStatus}</Text> : null}
+        <StatusMessage message={emailStatus?.message} tone={emailStatus?.tone} />
         <SecondaryButton title="Send Email Update Confirmation" onPress={submitEmailUpdate} />
       </Card>
 
@@ -1201,22 +1242,22 @@ function StatTile({ icon, label, sublabel, tone }) {
 }
 
 export function PremiumScreen({ navigate, subscription, updateSubscription }) {
-  const [checkoutStatus, setCheckoutStatus] = useState("");
+  const [checkoutStatus, setCheckoutStatus] = useState(null);
 
   function requestUpgrade(tierName) {
     updateSubscription({ requestedTier: tierName, checkoutStatus: "pending_payment_provider" });
-    setCheckoutStatus("Secure checkout is not enabled yet. Your interest was saved without changing your plan.");
+    setCheckoutStatus(
+      createStatus(
+        "Secure checkout is not enabled yet. Your interest was saved without changing your plan.",
+        "warning",
+      ),
+    );
   }
 
   return (
     <Screen>
       <Header eyebrow="Premium" title="Upgrade Your Experience" onBack={() => navigate("settings")} />
-      {checkoutStatus ? (
-        <Card style={styles.infoCard}>
-          <Icon name="shield" color={colors.warning} />
-          <Text style={styles.noteText}>{checkoutStatus}</Text>
-        </Card>
-      ) : null}
+      <StatusMessage message={checkoutStatus?.message} tone={checkoutStatus?.tone} />
       {premiumTiers.map((tier) => (
         <Card key={tier.id} style={[styles.tierCard, tier.id === "gold" && styles.goldTier, tier.id === "platinum" && styles.platinumTier]}>
           <View style={styles.sectionHeader}>
@@ -1251,11 +1292,11 @@ export function PremiumScreen({ navigate, subscription, updateSubscription }) {
 
 export function PrivacyCenterScreen({ navigate, currentUser, requestAccountDeletion, syncLabel }) {
   const [reason, setReason] = useState("");
-  const [status, setStatus] = useState("");
+  const [status, setStatus] = useState(null);
 
   function submitDeletionRequest() {
     requestAccountDeletion(reason || "User requested account deletion from Privacy Center.");
-    setStatus("Request submitted. Support will verify identity and complete deletion.");
+    setStatus(createStatus("Request submitted. Support will verify identity and complete deletion.", "success"));
   }
 
   return (
@@ -1284,7 +1325,7 @@ export function PrivacyCenterScreen({ navigate, currentUser, requestAccountDelet
           placeholder="Tell us why you want deletion"
           multiline
         />
-        {status ? <Text style={styles.authStatus}>{status}</Text> : null}
+        <StatusMessage message={status?.message} tone={status?.tone} />
         <PrimaryButton title="Request Account Deletion" onPress={submitDeletionRequest} />
       </Card>
     </Screen>
@@ -1330,6 +1371,24 @@ export function LegalScreen({ navigate }) {
 export function SafetyScreen({ navigate, submitReport, profile, reports }) {
   const [reason, setReason] = useState("Scam/Fraud");
   const [notes, setNotes] = useState("");
+  const [status, setStatus] = useState(null);
+
+  function submitSafetyReport() {
+    if (!profile) {
+      setStatus(createStatus("Open a profile from discovery before submitting a report.", "warning"));
+      return;
+    }
+
+    if (!reason.trim()) {
+      setStatus(createStatus("Choose a report reason first.", "error"));
+      return;
+    }
+
+    submitReport(reason.trim(), notes.trim());
+    setNotes("");
+    setStatus(createStatus(`Report submitted for ${profile.name}. Our safety team will review it confidentially.`, "success"));
+  }
+
   return (
     <Screen>
       <Header eyebrow="Trust and safety" title="Your Safety Matters" onBack={() => navigate("settings")} />
@@ -1338,9 +1397,17 @@ export function SafetyScreen({ navigate, submitReport, profile, reports }) {
         <Text style={type.h3}>Purposeful connections only</Text>
         <Text style={styles.bodySoft}>Reports are confidential and saved dynamically.</Text>
       </Card>
+      {!profile ? (
+        <Card>
+          <Text style={type.h3}>No profile selected</Text>
+          <Text style={styles.bodySoft}>Open a profile from Home before reporting someone from this screen.</Text>
+          <SecondaryButton title="Go to Discovery" onPress={() => navigate("home")} />
+        </Card>
+      ) : null}
       <Field label="Report reason" value={reason} onChangeText={setReason} />
       <Field label={`Notes about ${profile?.name || "profile"}`} value={notes} onChangeText={setNotes} multiline />
-      <PrimaryButton title="Submit Report" onPress={() => submitReport(reason, notes)} />
+      <StatusMessage message={status?.message} tone={status?.tone} />
+      <PrimaryButton title="Submit Report" onPress={submitSafetyReport} />
       <Card>
         <Text style={type.h3}>Reports submitted: {reports.length}</Text>
         <SummaryList items={reports.slice(0, 3).map((report) => `${report.reason} · ${report.notes || "No notes"}`)} />
@@ -1352,13 +1419,30 @@ export function SafetyScreen({ navigate, submitReport, profile, reports }) {
 export function FamilyScreen({ navigate, familyMembers, upsertFamilyMember, currentUserId }) {
   const first = familyMembers[0] || { name: "", relation: "", phone: "", permission: "" };
   const [member, setMember] = useState(first);
+  const [status, setStatus] = useState(null);
 
   function setField(key, value) {
     setMember((current) => ({ ...current, [key]: value }));
   }
 
   function save() {
-    upsertFamilyMember({ ...member, userId: currentUserId });
+    const issue = validateFamilyMember(member);
+    if (issue) {
+      setStatus(createStatus(issue, "error"));
+      return;
+    }
+
+    const cleanedMember = {
+      ...member,
+      userId: currentUserId,
+      name: member.name.trim(),
+      relation: member.relation.trim(),
+      phone: member.phone.trim(),
+      permission: member.permission.trim(),
+    };
+
+    upsertFamilyMember(cleanedMember);
+    setStatus(createStatus("Family invitation saved. You can now involve them in match reviews.", "success"));
   }
 
   return (
@@ -1377,6 +1461,7 @@ export function FamilyScreen({ navigate, familyMembers, upsertFamilyMember, curr
         <Field label="Phone" value={member.phone} onChangeText={(value) => setField("phone", value)} />
         <Field label="Permission" value={member.permission} onChangeText={(value) => setField("permission", value)} />
       </Card>
+      <StatusMessage message={status?.message} tone={status?.tone} />
       <Card>
         <Text style={type.h3}>Saved family members</Text>
         <SummaryList items={familyMembers.map((item) => `${item.name} · ${item.relation} · ${item.permission}`)} />
@@ -1390,6 +1475,7 @@ export function NotificationsScreen({
   navigate,
   notifications,
   notificationStatus,
+  notificationStatusTone,
   registerPushNotifications,
 }) {
   return (
@@ -1399,7 +1485,7 @@ export function NotificationsScreen({
         <Icon name="bell" color={colors.gold} />
         <View style={styles.flex}>
           <Text style={styles.optionTitle}>Push notifications</Text>
-          <Text style={styles.bodySoft}>{notificationStatus}</Text>
+          <StatusMessage compact message={notificationStatus} tone={notificationStatusTone} />
         </View>
         <SecondaryButton title="Enable" onPress={registerPushNotifications} />
       </Card>
@@ -1569,7 +1655,6 @@ const styles = StyleSheet.create({
   stickyButton: { marginTop: "auto" },
   centeredCard: { alignItems: "stretch", gap: spacing.md },
   authIcon: { width: 92, height: 92, alignSelf: "center", alignItems: "center", justifyContent: "center", borderRadius: 28, backgroundColor: colors.purple, ...shadow.glow },
-  authStatus: { ...type.small, color: colors.gold, textAlign: "center" },
   authLinks: { gap: spacing.md, alignItems: "center" },
   fieldLabel: { color: colors.textSoft, fontSize: 13, fontWeight: "800" },
   otpRow: { flexDirection: "row", gap: spacing.sm, marginVertical: spacing.xl },
