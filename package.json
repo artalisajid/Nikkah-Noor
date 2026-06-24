@@ -1,0 +1,55 @@
+{
+  "name": "nikkah-noor",
+  "version": "1.0.0",
+  "private": true,
+  "main": "expo/AppEntry.js",
+  "engines": {
+    "node": ">=22 <23"
+  },
+  "scripts": {
+    "start": "expo start",
+    "android": "expo start --android",
+    "ios": "expo start --ios",
+    "web": "expo start --web",
+    "check": "expo export --platform web && node scripts/post-export-hardening.mjs",
+    "deploy:web": "expo export --platform web && node scripts/post-export-hardening.mjs && eas deploy --non-interactive",
+    "update:production": "eas update --channel production --message \"Production update\" --environment production --non-interactive",
+    "build:android:preview": "eas build --platform android --profile preview --non-interactive",
+    "smoke": "node scripts/smoke-test.mjs",
+    "qa": "node scripts/qa-audit.mjs",
+    "test:deep": "node scripts/deep-flow-test.mjs",
+    "test:matrimonial": "node scripts/matrimonial-flow-test.mjs",
+    "test:responsive": "node scripts/responsive-copy-audit.mjs",
+    "security": "node scripts/security-audit.mjs",
+    "env:check": "node scripts/check-supabase-env.mjs",
+    "production:check": "node scripts/production-readiness.mjs",
+    "prod:check": "npm run env:check && npm run security && npm run production:check && npm run qa && npm run smoke && npm run test:deep && npm run test:matrimonial && npm run test:responsive && npm audit --audit-level=high && npm run check",
+    "seed:supabase": "node scripts/seed-supabase.mjs",
+    "seed:test-accounts": "npx supabase db query --linked --file supabase/test-accounts.sql",
+    "seed:matrimonial": "npx supabase db query --linked --file supabase/matrimonial-profiles.sql",
+    "smtp:check": "node scripts/configure-supabase-smtp.mjs --check",
+    "smtp:configure": "node scripts/configure-supabase-smtp.mjs"
+  },
+  "dependencies": {
+    "@react-native-async-storage/async-storage": "2.2.0",
+    "@supabase/supabase-js": "^2.106.1",
+    "@types/react": "~19.2.10",
+    "expo": "^55.0.0",
+    "expo-image-picker": "~55.0.20",
+    "expo-notifications": "~55.0.23",
+    "react": "19.2.0",
+    "react-dom": "19.2.0",
+    "react-native": "0.83.0",
+    "react-native-url-polyfill": "^3.0.0",
+    "react-native-web": "^0.21.0",
+    "typescript": "~5.9.2"
+  },
+  "devDependencies": {
+    "@babel/core": "^7.25.2",
+    "babel-preset-expo": "^55.0.22",
+    "supabase": "^2.101.0"
+  },
+  "overrides": {
+    "uuid": "11.1.1"
+  }
+}

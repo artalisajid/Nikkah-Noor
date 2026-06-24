@@ -1,0 +1,746 @@
+<!doctype html>
+<html lang="en">
+  <head>
+    <meta charset="utf-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1" />
+    <title>Nikkah Noor | Mobile UI Prototype</title>
+    <link rel="preconnect" href="https://images.unsplash.com" />
+    <link rel="stylesheet" href="./styles.css" />
+  </head>
+  <body>
+    <main class="prototype-shell" aria-label="Nikkah Noor interactive prototype">
+      <aside class="prototype-panel" aria-label="Prototype overview">
+        <div class="brand-mark" aria-hidden="true">
+          <span class="brand-symbol"></span>
+          <div>
+            <strong>Nikkah Noor</strong>
+            <small>Second marriage, designed with dignity</small>
+          </div>
+        </div>
+
+        <nav class="screen-rail" aria-label="Prototype screens">
+          <button class="rail-item active" data-screen-target="welcome">Welcome</button>
+          <button class="rail-item" data-screen-target="gender">Registration</button>
+          <button class="rail-item" data-screen-target="profile">Profile</button>
+          <button class="rail-item" data-screen-target="home">Discovery</button>
+          <button class="rail-item" data-screen-target="matches">Matches</button>
+          <button class="rail-item" data-screen-target="chat">Chat</button>
+          <button class="rail-item" data-screen-target="settings">Settings</button>
+          <button class="rail-item" data-screen-target="premium">Premium</button>
+          <button class="rail-item" data-screen-target="safety">Safety</button>
+          <button class="rail-item" data-screen-target="family">Family</button>
+        </nav>
+
+        <section class="panel-section">
+          <h2>Design Tokens</h2>
+          <div class="swatches" aria-label="Color palette">
+            <span style="--swatch:#0d0d0d"></span>
+            <span style="--swatch:#1a1a2e"></span>
+            <span style="--swatch:#d4af37"></span>
+            <span style="--swatch:#2c5f4f"></span>
+            <span style="--swatch:#8b1538"></span>
+          </div>
+          <p>
+            Dark premium base, restrained gold accents, Islamic geometric motifs,
+            privacy-forward language, and large thumb-friendly actions.
+          </p>
+        </section>
+      </aside>
+
+      <section class="device-wrap" aria-label="Mobile device preview">
+        <div class="device">
+          <div class="status-bar" aria-hidden="true">
+            <span>9:41</span>
+            <span class="status-icons">5G 100%</span>
+          </div>
+
+          <section class="screen active auth-screen welcome-screen" data-screen="welcome" aria-label="Welcome screen">
+            <div class="language-pill" role="button" tabindex="0">English / اردو</div>
+            <div class="welcome-hero">
+              <div class="islamic-rosette" aria-hidden="true"></div>
+              <div class="logo-lockup">
+                <span class="app-logo"></span>
+                <span>Nikkah Noor</span>
+              </div>
+              <h1>Find Your Life Partner with Dignity</h1>
+              <p>A trusted platform for second marriage in accordance with Islamic values.</p>
+            </div>
+            <div class="welcome-actions">
+              <button class="primary-btn" data-screen-target="gender">Start Your Journey</button>
+              <button class="secondary-btn" data-screen-target="phone">Sign In</button>
+              <p class="privacy-note">
+                <span class="icon icon-lock"></span>
+                Private profiles, encrypted verification, family-aware matching.
+              </p>
+            </div>
+          </section>
+
+          <section class="screen auth-screen" data-screen="gender" aria-label="Registration screen">
+            <header class="screen-header">
+              <button class="ghost-icon" data-screen-target="welcome" aria-label="Back">
+                <span class="icon icon-chevron-left"></span>
+              </button>
+              <div>
+                <span class="eyebrow">Step 1 of 6</span>
+                <h2>I am registering as</h2>
+              </div>
+            </header>
+
+            <div class="choice-grid">
+              <button class="identity-card selected" data-choice="male">
+                <span class="profile-silhouette male"></span>
+                <strong>Male</strong>
+                <small>مرد</small>
+              </button>
+              <button class="identity-card" data-choice="female">
+                <span class="profile-silhouette female"></span>
+                <strong>Female</strong>
+                <small>خاتون</small>
+              </button>
+            </div>
+
+            <div class="info-band">
+              <span class="icon icon-shield"></span>
+              <p>Your selection configures privacy controls, wali options, and matching preferences.</p>
+            </div>
+
+            <section class="status-card" aria-label="Marital status">
+              <h3>Marital status</h3>
+              <label class="radio-row">
+                <input type="radio" name="status" checked />
+                <span class="ring-icon"></span>
+                <span>
+                  <strong>Divorced</strong>
+                  <small>Ready for a respectful new beginning.</small>
+                </span>
+              </label>
+              <label class="radio-row">
+                <input type="radio" name="status" />
+                <span class="ring-icon single"></span>
+                <span>
+                  <strong>Widower / Widow</strong>
+                  <small>Purposeful matching with family sensitivity.</small>
+                </span>
+              </label>
+              <label class="radio-row polygamy-option">
+                <input type="radio" name="status" />
+                <span class="ring-icon double"></span>
+                <span>
+                  <strong>Currently married</strong>
+                  <small>Requires clear consent and financial capacity declaration.</small>
+                </span>
+              </label>
+              <label class="check-row">
+                <input type="checkbox" />
+                <span>First wife is aware and consenting.</span>
+              </label>
+            </section>
+
+            <button class="primary-btn sticky-action" data-screen-target="phone">Continue</button>
+          </section>
+
+          <section class="screen auth-screen" data-screen="phone" aria-label="Phone verification screen">
+            <header class="screen-header">
+              <button class="ghost-icon" data-screen-target="gender" aria-label="Back">
+                <span class="icon icon-chevron-left"></span>
+              </button>
+              <div>
+                <span class="eyebrow">Step 2 of 6</span>
+                <h2>Verify your phone</h2>
+              </div>
+            </header>
+
+            <div class="phone-card">
+              <span class="phone-illustration" aria-hidden="true"></span>
+              <label for="phoneNumber">Mobile number</label>
+              <div class="phone-input">
+                <span>🇵🇰 +92</span>
+                <input id="phoneNumber" value="300 1234567" inputmode="tel" />
+              </div>
+              <p><span class="icon icon-lock"></span>Your number is encrypted and never shared.</p>
+            </div>
+
+            <div class="trust-row">
+              <span>SSL secured</span>
+              <span>256-bit encryption</span>
+              <span>OTP verified</span>
+            </div>
+
+            <button class="primary-btn sticky-action" data-screen-target="otp">Send Code</button>
+          </section>
+
+          <section class="screen auth-screen" data-screen="otp" aria-label="OTP verification screen">
+            <header class="screen-header">
+              <button class="ghost-icon" data-screen-target="phone" aria-label="Back">
+                <span class="icon icon-chevron-left"></span>
+              </button>
+              <div>
+                <span class="eyebrow">Step 3 of 6</span>
+                <h2>Enter verification code</h2>
+              </div>
+            </header>
+
+            <p class="muted-copy">Sent to +92-300-XXX-4567</p>
+            <div class="otp-row" aria-label="6 digit OTP code">
+              <input maxlength="1" inputmode="numeric" value="2" />
+              <input maxlength="1" inputmode="numeric" value="8" />
+              <input maxlength="1" inputmode="numeric" value="4" />
+              <input maxlength="1" inputmode="numeric" value="1" />
+              <input maxlength="1" inputmode="numeric" value="9" />
+              <input maxlength="1" inputmode="numeric" value="6" />
+            </div>
+            <div class="verification-state">
+              <span class="success-dot"></span>
+              <span>Code accepted. You can continue.</span>
+            </div>
+            <button class="text-link" type="button">Resend code in 00:45</button>
+            <button class="primary-btn sticky-action" data-screen-target="profile">Create Profile</button>
+          </section>
+
+          <section class="screen app-screen profile-screen" data-screen="profile" aria-label="Profile creation screen">
+            <header class="app-topbar">
+              <button class="ghost-icon" data-screen-target="gender" aria-label="Back">
+                <span class="icon icon-chevron-left"></span>
+              </button>
+              <div>
+                <span class="eyebrow">Step 4 of 6</span>
+                <h2>Create your profile</h2>
+              </div>
+              <span class="autosave"><span class="icon icon-cloud"></span>Saved</span>
+            </header>
+
+            <div class="progress-strip">
+              <span style="width:75%"></span>
+            </div>
+
+            <section class="photo-upload">
+              <button class="upload-zone" aria-label="Upload profile photo">
+                <span class="icon icon-camera"></span>
+                <strong>Add Your Photo</strong>
+                <small>Show to verified matches only</small>
+              </button>
+              <div class="privacy-toggles">
+                <label><input type="checkbox" checked /> Blur photo before mutual match</label>
+                <label><input type="checkbox" /> Family viewing only</label>
+              </div>
+            </section>
+
+            <section class="form-section expanded">
+              <button class="section-toggle" type="button">
+                <span>Personal details</span>
+                <span class="completion">90%</span>
+              </button>
+              <div class="form-grid">
+                <label>Full name<input value="Ahmed Raza" /></label>
+                <label>Age<input value="38" inputmode="numeric" /></label>
+                <label>City<select><option>Karachi</option><option>Lahore</option><option>Islamabad</option></select></label>
+                <label>Living situation<select><option>Own house</option><option>With family</option><option>Separate residence</option></select></label>
+              </div>
+            </section>
+
+            <section class="form-section">
+              <button class="section-toggle" type="button">
+                <span>Religious information</span>
+                <span class="completion">80%</span>
+              </button>
+              <div class="chip-list">
+                <button class="chip selected">Regular prayer</button>
+                <button class="chip">Can recite Quran</button>
+                <button class="chip selected">Family-first</button>
+                <button class="chip">Prefer not to say</button>
+              </div>
+            </section>
+
+            <section class="form-section">
+              <button class="section-toggle" type="button">
+                <span>Family and children</span>
+                <span class="completion">70%</span>
+              </button>
+              <div class="summary-list">
+                <span>2 children from previous marriage</span>
+                <span>Open to children from partner</span>
+                <span>Nuclear family preferred</span>
+              </div>
+            </section>
+
+            <section class="bio-box">
+              <div class="field-header">
+                <h3>About me</h3>
+                <span>392 / 500</span>
+              </div>
+              <textarea>I value honesty, faith, family involvement, and a peaceful home. I am looking for a sincere partner who understands the responsibilities of a second marriage.</textarea>
+              <div class="chip-list">
+                <button class="chip selected">Traditional</button>
+                <button class="chip selected">Educated</button>
+                <button class="chip">Social work</button>
+                <button class="chip selected">Responsible</button>
+              </div>
+            </section>
+
+            <button class="primary-btn sticky-action" data-screen-target="home">Start Matching</button>
+          </section>
+
+          <section class="screen app-screen home-screen" data-screen="home" aria-label="Home discovery screen">
+            <header class="app-topbar">
+              <div class="mini-brand"><span class="app-logo small"></span>Nikkah Noor</div>
+              <div class="top-actions">
+                <button class="ghost-icon" data-sheet-target="filters" aria-label="Open filters">
+                  <span class="icon icon-filter"></span>
+                </button>
+                <button class="ghost-icon notification-dot" data-screen-target="notifications" aria-label="Notifications">
+                  <span class="icon icon-bell"></span>
+                </button>
+              </div>
+            </header>
+
+            <section class="prayer-widget">
+              <span class="icon icon-moon"></span>
+              <div>
+                <strong>Asr in 42 min</strong>
+                <small>Quiet mode can pause prompts during prayer.</small>
+              </div>
+              <button class="mini-btn">Qibla</button>
+            </section>
+
+            <article class="profile-card" id="profileCard">
+              <div class="profile-media" aria-hidden="true"></div>
+              <div class="badge-stack">
+                <span class="badge verified" title="ID verified"><span class="icon icon-shield"></span></span>
+                <span class="badge premium" title="Premium member"><span class="icon icon-star"></span></span>
+                <span class="badge family" title="Family verified"><span class="icon icon-users"></span></span>
+              </div>
+              <div class="privacy-blur">
+                <span class="icon icon-lock"></span>
+                Like to request photo reveal
+              </div>
+              <div class="profile-overlay">
+                <div class="profile-name-row">
+                  <h1 id="discoverName">Fatima, 32</h1>
+                  <span class="online-pill">Active</span>
+                </div>
+                <p><span class="icon icon-pin"></span><span id="discoverCity">Karachi, Pakistan</span></p>
+                <div class="tag-row">
+                  <span>Widow</span>
+                  <span>Teacher</span>
+                  <span>2 children</span>
+                </div>
+                <button class="details-btn" data-sheet-target="details">View details</button>
+              </div>
+            </article>
+
+            <div class="swipe-actions" aria-label="Discovery actions">
+              <button class="round-action pass" data-swipe="pass" aria-label="Pass">
+                <span class="icon icon-x"></span>
+              </button>
+              <button class="round-action info" data-sheet-target="details" aria-label="Info">
+                <span class="icon icon-info"></span>
+              </button>
+              <button class="round-action like" data-swipe="like" aria-label="Like">
+                <span class="icon icon-heart"></span>
+              </button>
+              <button class="round-action super" data-swipe="super" aria-label="Super like">
+                <span class="icon icon-star"></span>
+                <small>3</small>
+              </button>
+            </div>
+
+            <nav class="bottom-nav" aria-label="Main navigation">
+              <button class="active" data-screen-target="home"><span class="icon icon-home"></span><small>Home</small></button>
+              <button data-sheet-target="filters"><span class="icon icon-grid"></span><small>Explore</small></button>
+              <button data-screen-target="matches"><span class="icon icon-heart"></span><small>Matches</small></button>
+              <button data-screen-target="chat"><span class="icon icon-chat"></span><small>Messages</small></button>
+              <button data-screen-target="settings"><span class="icon icon-user"></span><small>Profile</small></button>
+            </nav>
+          </section>
+
+          <section class="screen app-screen" data-screen="matches" aria-label="Matches screen">
+            <header class="app-topbar">
+              <div>
+                <span class="eyebrow">3 new</span>
+                <h2>Your Matches</h2>
+              </div>
+              <button class="ghost-icon" data-screen-target="home" aria-label="Home">
+                <span class="icon icon-home"></span>
+              </button>
+            </header>
+
+            <div class="segmented-tabs" role="tablist">
+              <button class="active">All Matches</button>
+              <button>New</button>
+              <button>Messages</button>
+            </div>
+
+            <div class="match-list">
+              <button class="match-row new" data-screen-target="chat">
+                <span class="avatar photo-a"></span>
+                <span>
+                  <strong>Ayesha, 35</strong>
+                  <small>Matched 2 hours ago · Karachi</small>
+                  <em>السلام علیکم. Thank you for connecting.</em>
+                </span>
+                <b>2</b>
+              </button>
+              <button class="match-row" data-screen-target="chat">
+                <span class="avatar photo-b"></span>
+                <span>
+                  <strong>Sana, 31</strong>
+                  <small>Matched yesterday · Lahore</small>
+                  <em>Family involvement is important to me too.</em>
+                </span>
+              </button>
+              <button class="match-row">
+                <span class="avatar photo-c"></span>
+                <span>
+                  <strong>Maryam, 40</strong>
+                  <small>Matched Monday · Islamabad</small>
+                  <em>Start a respectful conversation.</em>
+                </span>
+              </button>
+            </div>
+
+            <section class="empty-nudge">
+              <h3>Peak time starts at 8 PM</h3>
+              <p>Profiles are more active on Sunday evenings. A boost can help you appear higher.</p>
+              <button class="secondary-btn" data-screen-target="premium">View Boosts</button>
+            </section>
+
+            <nav class="bottom-nav" aria-label="Main navigation">
+              <button data-screen-target="home"><span class="icon icon-home"></span><small>Home</small></button>
+              <button data-sheet-target="filters"><span class="icon icon-grid"></span><small>Explore</small></button>
+              <button class="active" data-screen-target="matches"><span class="icon icon-heart"></span><small>Matches</small></button>
+              <button data-screen-target="chat"><span class="icon icon-chat"></span><small>Messages</small></button>
+              <button data-screen-target="settings"><span class="icon icon-user"></span><small>Profile</small></button>
+            </nav>
+          </section>
+
+          <section class="screen app-screen chat-screen" data-screen="chat" aria-label="Chat screen">
+            <header class="chat-header">
+              <button class="ghost-icon" data-screen-target="matches" aria-label="Back">
+                <span class="icon icon-chevron-left"></span>
+              </button>
+              <span class="avatar photo-a"></span>
+              <div>
+                <strong>Ayesha</strong>
+                <small>Active 12 min ago</small>
+              </div>
+              <button class="ghost-icon" aria-label="Chat options">
+                <span class="icon icon-more"></span>
+              </button>
+            </header>
+
+            <div class="safety-banner">
+              <span class="icon icon-shield"></span>
+              Never send money or sensitive documents in chat.
+            </div>
+
+            <div class="message-stack">
+              <div class="message received">
+                <p>السلام علیکم. Thank you for connecting.</p>
+                <small>10:12 AM</small>
+              </div>
+              <div class="message sent">
+                <p>Wa Alaikum Assalam. I appreciate your message. Family involvement is important to me.</p>
+                <small>10:14 AM · Read</small>
+              </div>
+              <div class="message received">
+                <p>That is good to know. My elder brother helps review profiles before we move forward.</p>
+                <small>10:16 AM</small>
+              </div>
+            </div>
+
+            <div class="icebreakers">
+              <button>As-salamu Alaykum</button>
+              <button>I noticed we share similar values.</button>
+              <button>May I learn more about your family preferences?</button>
+            </div>
+
+            <form class="chat-input">
+              <button type="button" aria-label="Attach photo"><span class="icon icon-camera"></span></button>
+              <input placeholder="Write a respectful message..." />
+              <button type="submit" aria-label="Send"><span class="icon icon-send"></span></button>
+            </form>
+          </section>
+
+          <section class="screen app-screen settings-screen" data-screen="settings" aria-label="Settings and profile screen">
+            <header class="app-topbar">
+              <h2>Settings</h2>
+              <button class="ghost-icon" aria-label="More">
+                <span class="icon icon-more"></span>
+              </button>
+            </header>
+
+            <section class="profile-summary">
+              <span class="avatar large photo-d"></span>
+              <h1>Ahmed Raza</h1>
+              <p>@ahmed.karachi</p>
+              <div class="completion-bar" aria-label="75 percent complete"><span style="width:75%"></span></div>
+              <small>75% Complete</small>
+              <button class="primary-btn" data-screen-target="profile">Edit Profile</button>
+            </section>
+
+            <div class="stats-grid">
+              <button class="stat-tile gold"><span class="icon icon-star"></span><strong>0 Super Likes</strong><small>Get More</small></button>
+              <button class="stat-tile purple"><span class="icon icon-bolt"></span><strong>My Boosts</strong><small>Get More</small></button>
+              <button class="stat-tile teal"><span class="icon icon-eye"></span><strong>245 Views</strong><small>This week</small></button>
+              <button class="stat-tile navy"><span class="icon icon-lock"></span><strong>Privacy</strong><small>Review</small></button>
+            </div>
+
+            <section class="subscription-card">
+              <div class="field-header">
+                <h3>Nikkah Noor Gold</h3>
+                <span class="gold-badge">GOLD</span>
+              </div>
+              <div class="feature-compare">
+                <span>See who likes you</span><b>Gold</b>
+                <span>Top Picks</span><b>Gold</b>
+                <span>Advanced filters</span><b>Gold</b>
+              </div>
+              <button class="primary-btn" data-screen-target="premium">Upgrade</button>
+            </section>
+
+            <div class="settings-list">
+              <button><span class="icon icon-user"></span>Account settings<span class="icon icon-chevron-right"></span></button>
+              <button><span class="icon icon-lock"></span>Privacy settings<span class="icon icon-chevron-right"></span></button>
+              <button><span class="icon icon-bell"></span>Notifications<span class="icon icon-chevron-right"></span></button>
+              <button data-screen-target="safety"><span class="icon icon-shield"></span>Safety center<span class="icon icon-chevron-right"></span></button>
+              <button data-screen-target="family"><span class="icon icon-users"></span>Family access<span class="icon icon-chevron-right"></span></button>
+            </div>
+
+            <label class="incognito-toggle">
+              <span>
+                <strong>Go Incognito</strong>
+                <small>Browse privately without being seen.</small>
+              </span>
+              <input type="checkbox" />
+            </label>
+
+            <nav class="bottom-nav" aria-label="Main navigation">
+              <button data-screen-target="home"><span class="icon icon-home"></span><small>Home</small></button>
+              <button data-sheet-target="filters"><span class="icon icon-grid"></span><small>Explore</small></button>
+              <button data-screen-target="matches"><span class="icon icon-heart"></span><small>Matches</small></button>
+              <button data-screen-target="chat"><span class="icon icon-chat"></span><small>Messages</small></button>
+              <button class="active" data-screen-target="settings"><span class="icon icon-user"></span><small>Profile</small></button>
+            </nav>
+          </section>
+
+          <section class="screen app-screen premium-screen" data-screen="premium" aria-label="Premium subscription screen">
+            <header class="app-topbar">
+              <button class="ghost-icon" data-screen-target="settings" aria-label="Back">
+                <span class="icon icon-chevron-left"></span>
+              </button>
+              <div>
+                <span class="eyebrow">Premium</span>
+                <h2>Upgrade Your Experience</h2>
+              </div>
+            </header>
+
+            <section class="tier-card basic">
+              <span class="tier-badge">Current</span>
+              <h3>Basic</h3>
+              <p>10 likes per day, basic matching, standard support.</p>
+              <strong>Free</strong>
+            </section>
+
+            <section class="tier-card gold-tier">
+              <span class="tier-badge">Recommended</span>
+              <h3>Gold</h3>
+              <p>Unlimited likes, 5 Super Likes daily, rewind, advanced filters, and priority support.</p>
+              <div class="price-row">
+                <button class="selected">1 mo<br><b>Rs. 2,499</b></button>
+                <button>3 mo<br><b>Rs. 5,999</b></button>
+                <button>6 mo<br><b>Rs. 9,999</b></button>
+              </div>
+              <button class="primary-btn">Select Gold</button>
+            </section>
+
+            <section class="tier-card platinum-tier">
+              <span class="tier-badge">Ultimate</span>
+              <h3>Platinum</h3>
+              <p>Dedicated advisor, expedited verification, profile placement, and exclusive event access.</p>
+              <button class="secondary-btn">Select Platinum</button>
+            </section>
+
+            <section class="payment-methods">
+              <h3>Secure payment</h3>
+              <div class="method-grid">
+                <span>Visa</span>
+                <span>Mastercard</span>
+                <span>JazzCash</span>
+                <span>Easypaisa</span>
+              </div>
+            </section>
+          </section>
+
+          <section class="screen app-screen safety-screen" data-screen="safety" aria-label="Safety center screen">
+            <header class="app-topbar">
+              <button class="ghost-icon" data-screen-target="settings" aria-label="Back">
+                <span class="icon icon-chevron-left"></span>
+              </button>
+              <div>
+                <span class="eyebrow">Trust and safety</span>
+                <h2>Your Safety Matters</h2>
+              </div>
+            </header>
+
+            <section class="safety-hero">
+              <span class="icon icon-shield"></span>
+              <h3>Purposeful connections only</h3>
+              <p>Moderation, verification, privacy controls, and family involvement work together to reduce risk.</p>
+            </section>
+
+            <div class="guideline-list">
+              <article>
+                <h3>Recognizing red flags</h3>
+                <p>Requests for money, pressure for quick decisions, refusing verification, or inconsistent stories.</p>
+              </article>
+              <article>
+                <h3>Safe meeting guidelines</h3>
+                <p>Video call first, involve family early, meet in public, and keep trusted relatives informed.</p>
+              </article>
+              <article>
+                <h3>Islamic guidance</h3>
+                <p>Respectful communication, wali support, and family-reviewed progression are encouraged.</p>
+              </article>
+            </div>
+
+            <div class="quick-actions">
+              <button class="secondary-btn">Report Profile</button>
+              <button class="secondary-btn">Block User</button>
+              <button class="primary-btn">Contact Support</button>
+            </div>
+          </section>
+
+          <section class="screen app-screen family-screen" data-screen="family" aria-label="Family access screen">
+            <header class="app-topbar">
+              <button class="ghost-icon" data-screen-target="settings" aria-label="Back">
+                <span class="icon icon-chevron-left"></span>
+              </button>
+              <div>
+                <span class="eyebrow">Family access</span>
+                <h2>Involve Your Family</h2>
+              </div>
+            </header>
+
+            <section class="family-card">
+              <span class="family-illustration" aria-hidden="true"></span>
+              <h3>Add a trusted guardian or relative</h3>
+              <p>Invite family members to review matches, suggest profiles, or approve conversations.</p>
+            </section>
+
+            <div class="form-grid">
+              <label>Name<input value="Hassan Raza" /></label>
+              <label>Relation<select><option>Brother</option><option>Father</option><option>Mother</option><option>Sister</option></select></label>
+              <label>Phone<input value="+92 300 7654321" /></label>
+              <label>Permission<select><option>View + suggest matches</option><option>View profile only</option><option>Communicate on my behalf</option></select></label>
+            </div>
+
+            <section class="wali-flow">
+              <h3>Wali approval flow</h3>
+              <ol>
+                <li>Interest request received</li>
+                <li>Guardian reviews profile</li>
+                <li>Conversation unlocks after approval</li>
+              </ol>
+            </section>
+
+            <button class="primary-btn sticky-action">Send Invitation</button>
+          </section>
+
+          <section class="screen app-screen notifications-screen" data-screen="notifications" aria-label="Notifications screen">
+            <header class="app-topbar">
+              <button class="ghost-icon" data-screen-target="home" aria-label="Back">
+                <span class="icon icon-chevron-left"></span>
+              </button>
+              <h2>Notifications</h2>
+            </header>
+            <div class="segmented-tabs">
+              <button class="active">All</button>
+              <button>Matches</button>
+              <button>Activity</button>
+            </div>
+            <div class="settings-list">
+              <button><span class="icon icon-heart"></span>It's a match with Ayesha<span>2m</span></button>
+              <button><span class="icon icon-eye"></span>Your profile was viewed 7 times today<span>1h</span></button>
+              <button><span class="icon icon-shield"></span>Your ID verification is under review<span>3h</span></button>
+            </div>
+          </section>
+
+          <div class="sheet" data-sheet="filters" aria-hidden="true">
+            <div class="sheet-panel">
+              <div class="sheet-handle"></div>
+              <div class="field-header">
+                <h2>Advanced Filters</h2>
+                <button class="ghost-icon" data-close-sheet aria-label="Close">
+                  <span class="icon icon-x"></span>
+                </button>
+              </div>
+              <label class="range-label">Age range <span>28 - 45</span></label>
+              <div class="range-track"><span style="left:22%;width:48%"></span></div>
+              <div class="chip-list">
+                <button class="chip selected">Same city</button>
+                <button class="chip">Verified only</button>
+                <button class="chip selected">Open to children</button>
+                <button class="chip">Recently active</button>
+              </div>
+              <div class="filter-group">
+                <h3>Religious compatibility</h3>
+                <label><input type="checkbox" checked /> Prayer is important</label>
+                <label><input type="checkbox" /> Sect preference</label>
+                <label><input type="checkbox" checked /> Family involvement expected</label>
+              </div>
+              <button class="primary-btn" data-close-sheet>Apply Filters · 243 profiles</button>
+            </div>
+          </div>
+
+          <div class="sheet" data-sheet="details" aria-hidden="true">
+            <div class="sheet-panel tall">
+              <div class="sheet-handle"></div>
+              <div class="field-header">
+                <h2>Profile Details</h2>
+                <button class="ghost-icon" data-close-sheet aria-label="Close">
+                  <span class="icon icon-x"></span>
+                </button>
+              </div>
+              <div class="detail-profile">
+                <span class="avatar large photo-a"></span>
+                <div>
+                  <h3>Fatima, 32</h3>
+                  <p>Karachi · Widow · School Teacher</p>
+                </div>
+              </div>
+              <p class="detail-copy">
+                I am a teacher and mother of two. I value faith, patience, and family-centered decisions.
+                I am looking for a kind and responsible partner who respects children and elders.
+              </p>
+              <div class="summary-list two-col">
+                <span>Master's in Education</span>
+                <span>2 children, ages 5 and 8</span>
+                <span>Regular prayer</span>
+                <span>Open to Karachi families</span>
+                <span>85% compatibility</span>
+                <span>Family verified</span>
+              </div>
+              <button class="primary-btn" data-close-sheet>Send Like</button>
+            </div>
+          </div>
+
+          <div class="match-modal" aria-hidden="true">
+            <div class="match-modal-card">
+              <div class="match-portraits">
+                <span class="avatar large photo-d"></span>
+                <span class="match-heart"><span class="icon icon-heart"></span></span>
+                <span class="avatar large photo-a"></span>
+              </div>
+              <h2>It's a Match!</h2>
+              <p>مبارک ہو - May Allah bless this connection.</p>
+              <button class="primary-btn" data-screen-target="chat">Send a message</button>
+              <button class="text-link" data-close-match>Keep browsing</button>
+            </div>
+          </div>
+        </div>
+      </section>
+    </main>
+
+    <script src="./script.js"></script>
+  </body>
+</html>

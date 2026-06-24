@@ -1,0 +1,43 @@
+{
+  "expo": {
+    "name": "Nikkah Noor",
+    "slug": "nikkah-noor",
+    "version": "1.0.0",
+    "description": "A privacy-first Islamic matrimonial platform for serious second-marriage introductions.",
+    "orientation": "portrait",
+    "scheme": "nikkahnoor",
+    "userInterfaceStyle": "dark",
+    "primaryColor": "#0D0D0D",
+    "assetBundlePatterns": [
+      "**/*"
+    ],
+    "ios": {
+      "supportsTablet": true,
+      "bundleIdentifier": "com.nikkahnoor.app"
+    },
+    "android": {
+      "package": "com.nikkahnoor.app",
+      "edgeToEdgeEnabled": true
+    },
+    "web": {
+      "bundler": "metro"
+    },
+    "plugins": [
+      [
+        "expo-image-picker",
+        {
+          "photosPermission": "Nikkah Noor uses your selected photo as your matrimonial profile image.",
+          "cameraPermission": "Nikkah Noor can use the camera if you choose to take a profile photo.",
+          "microphonePermission": false
+        }
+      ],
+      [
+        "expo-notifications",
+        {
+          "color": "#D4AF37",
+          "defaultChannel": "default"
+        }
+      ]
+    ]
+  }
+}
