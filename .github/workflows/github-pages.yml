@@ -40,6 +40,8 @@ jobs:
           EOF
 
       - name: Export web build
+        env:
+          WEB_BASE_PATH: /Nikkah-Noor
         run: npm run check
 
       - name: Upload Pages artifact
