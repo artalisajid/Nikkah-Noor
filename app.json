@@ -38,6 +38,18 @@
           "defaultChannel": "default"
         }
       ]
-    ]
+    ],
+    "extra": {
+      "eas": {
+        "projectId": "7cd3f373-cdb8-4bd6-993a-c6d9fb71e6c7"
+      }
+    },
+    "owner": "artsajidali",
+    "runtimeVersion": {
+      "policy": "appVersion"
+    },
+    "updates": {
+      "url": "https://u.expo.dev/7cd3f373-cdb8-4bd6-993a-c6d9fb71e6c7"
+    }
   }
 }
