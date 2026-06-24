@@ -38,5 +38,8 @@ jobs:
       - name: Validate env
         run: npm run env:check
 
-      - name: Publish OTA update
+      - name: Publish OTA update to production
         run: npx eas-cli@latest update --channel production --message "main:${{ github.sha }}" --environment production --non-interactive
+
+      - name: Publish OTA update to preview
+        run: npx eas-cli@latest update --channel preview --message "main:${{ github.sha }}" --environment preview --non-interactive
